@@ -21,7 +21,7 @@ use async_trait::async_trait;
 use datafusion_processor::{DataFusionTaskContext, DatafusionProcessor};
 use futures::StreamExt;
 use futures::future::try_join_all;
-use iceberg::arrow::RecordBatchPartitionSplitter;
+use iceberg::arrow::{FieldMatchMode, RecordBatchPartitionSplitter};
 use iceberg::io::FileIO;
 use iceberg::spec::{DataFile, PartitionSpec, Schema};
 use iceberg::writer::base_writer::data_file_writer::DataFileWriterBuilder;
@@ -178,9 +178,14 @@ pub fn build_iceberg_data_file_writer(
         })?;
 
     let data_file_builder = {
-        let parquet_writer_builder = ParquetWriterBuilder::new(
+        // DataFusion rebuilds the projected Arrow schema and does not preserve
+        // `PARQUET:field_id` metadata on every field. The projection names are
+        // generated from the current Iceberg schema, so name matching is the
+        // correct boundary contract for compaction output.
+        let parquet_writer_builder = ParquetWriterBuilder::new_with_match_mode(
             execution_config.write_parquet_properties.clone(),
             schema.clone(),
+            FieldMatchMode::Name,
         );
 
         let unique_uuid_suffix = Uuid::now_v7();
@@ -220,4 +225,73 @@ pub fn build_iceberg_data_file_writer(
     );
 
     Ok(Box::new(iceberg_task_writer))
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use std::sync::Arc;
+
+    use datafusion::arrow::array::{ArrayRef, Float32Array};
+    use datafusion::arrow::datatypes::{DataType, Field, Schema as ArrowSchema};
+    use datafusion::arrow::record_batch::RecordBatch;
+    use iceberg::io::FileIOBuilder;
+    use iceberg::spec::{NestedField, PartitionSpec, PrimitiveType, Schema, Type};
+    use iceberg::writer::file_writer::location_generator::DefaultLocationGenerator;
+    use tempfile::TempDir;
+
+    use super::build_iceberg_data_file_writer;
+    use crate::config::CompactionExecutionConfig;
+
+    #[tokio::test]
+    async fn datafusion_writer_resolves_ea_field_4890_without_arrow_id_metadata() {
+        let temp_dir = TempDir::new().unwrap();
+        let file_io = FileIOBuilder::new_fs_io().build().unwrap();
+        let location_generator = DefaultLocationGenerator::with_data_location(
+            temp_dir.path().to_str().unwrap().to_owned(),
+        );
+        let schema = Arc::new(
+            Schema::builder()
+                .with_fields(vec![
+                    NestedField::optional(
+                        4890,
+                        "ea_schema_field",
+                        Type::Primitive(PrimitiveType::Float),
+                    )
+                    .into(),
+                ])
+                .build()
+                .unwrap(),
+        );
+        let partition_spec = Arc::new(PartitionSpec::builder(schema.clone()).build().unwrap());
+        let mut writer = build_iceberg_data_file_writer(
+            "ea-field-id-regression".to_owned(),
+            location_generator,
+            schema,
+            file_io,
+            partition_spec,
+            None,
+            Arc::new(CompactionExecutionConfig::default()),
+        )
+        .unwrap();
+
+        let arrow_schema = Arc::new(ArrowSchema::new(vec![Field::new(
+            "ea_schema_field",
+            DataType::Float32,
+            true,
+        )]));
+        assert_eq!(arrow_schema.field(0).metadata(), &HashMap::new());
+        let batch = RecordBatch::try_new(arrow_schema, vec![Arc::new(Float32Array::from(vec![
+            f32::NAN,
+            1.0,
+        ])) as ArrayRef])
+        .unwrap();
+
+        writer.write(batch).await.unwrap();
+        let files = writer.close().await.unwrap();
+
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].record_count(), 2);
+        assert_eq!(files[0].nan_value_counts(), &HashMap::from([(4890, 1)]));
+    }
 }
