@@ -1,11 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
-    "core",
-    "examples/memory-catalog",
-    "examples/rest-catalog",
-    "integration-tests",
-]
+members = ["core", "examples/memory-catalog", "examples/rest-catalog", "integration-tests"]
 
 [workspace.dependencies]
 # Async runtime and utilities
@@ -18,11 +13,7 @@ datafusion = "53.0"
 
 # Local workspace members
 futures = "0.3.17"
-iceberg = { git = "https://github.com/risingwavelabs/iceberg-rust.git", rev = "11e09f86c908711770eae2f77220f286adccc58b", features = [
-    "storage-s3",
-    "storage-azblob",
-    "storage-azdls",
-] }
+iceberg = { git = "https://github.com/risingwavelabs/iceberg-rust.git", rev = "11e09f86c908711770eae2f77220f286adccc58b", features = ["storage-s3", "storage-azblob", "storage-azdls"] }
 iceberg-catalog-glue = { git = "https://github.com/risingwavelabs/iceberg-rust.git", rev = "11e09f86c908711770eae2f77220f286adccc58b" }
 iceberg-catalog-memory = { git = "https://github.com/risingwavelabs/iceberg-rust.git", rev = "11e09f86c908711770eae2f77220f286adccc58b" }
 iceberg-catalog-rest = { git = "https://github.com/risingwavelabs/iceberg-rust.git", rev = "11e09f86c908711770eae2f77220f286adccc58b" }
@@ -72,3 +63,28 @@ str_to_string = "warn"
 large_enum_variant = "allow"
 # TODO: this makes sense, but it's too noisy for now (2025-03-10)
 result_large_err = "allow"
+
+# Match the Iceberg revision used by production consumers.
+[patch."https://github.com/risingwavelabs/iceberg-rust.git"]
+iceberg = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
+iceberg-catalog-glue = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
+iceberg-catalog-rest = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
+iceberg-datafusion = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
+
+# Dependency patches are applied at the workspace root, not inherited from Iceberg.
+[patch.crates-io]
+arrow = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-array = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-buffer = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-data = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-schema = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-cast = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-csv = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-json = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-ord = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-row = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-string = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-select = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-ipc = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+arrow-arith = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
+parquet = { git = "https://github.com/auguria-io/arrow-rs-internal", rev = "3b76e4ebb2e546c1671f36a0431168a0dfbd6def" }
