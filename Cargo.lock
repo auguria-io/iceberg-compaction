@@ -2659,7 +2659,7 @@ dependencies = [
 [[package]]
 name = "iceberg"
 version = "0.8.0"
-source = "git+https://github.com/auguria-io/iceberg-rust?rev=1e67a8c16def2e409eb45b3adf99db51fedfccbf#1e67a8c16def2e409eb45b3adf99db51fedfccbf"
+source = "git+https://github.com/auguria-io/iceberg-rust?rev=65371fac1acfae68ef42f0cb68ab107535caf13d#65371fac1acfae68ef42f0cb68ab107535caf13d"
 dependencies = [
  "anyhow",
  "apache-avro",
@@ -2718,7 +2718,7 @@ dependencies = [
 [[package]]
 name = "iceberg-catalog-glue"
 version = "0.8.0"
-source = "git+https://github.com/auguria-io/iceberg-rust?rev=1e67a8c16def2e409eb45b3adf99db51fedfccbf#1e67a8c16def2e409eb45b3adf99db51fedfccbf"
+source = "git+https://github.com/auguria-io/iceberg-rust?rev=65371fac1acfae68ef42f0cb68ab107535caf13d#65371fac1acfae68ef42f0cb68ab107535caf13d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2733,7 +2733,7 @@ dependencies = [
 [[package]]
 name = "iceberg-catalog-rest"
 version = "0.8.0"
-source = "git+https://github.com/auguria-io/iceberg-rust?rev=1e67a8c16def2e409eb45b3adf99db51fedfccbf#1e67a8c16def2e409eb45b3adf99db51fedfccbf"
+source = "git+https://github.com/auguria-io/iceberg-rust?rev=65371fac1acfae68ef42f0cb68ab107535caf13d#65371fac1acfae68ef42f0cb68ab107535caf13d"
 dependencies = [
  "async-trait",
  "base64",
@@ -2819,7 +2819,7 @@ dependencies = [
 [[package]]
 name = "iceberg-datafusion"
 version = "0.8.0"
-source = "git+https://github.com/auguria-io/iceberg-rust?rev=1e67a8c16def2e409eb45b3adf99db51fedfccbf#1e67a8c16def2e409eb45b3adf99db51fedfccbf"
+source = "git+https://github.com/auguria-io/iceberg-rust?rev=65371fac1acfae68ef42f0cb68ab107535caf13d#65371fac1acfae68ef42f0cb68ab107535caf13d"
 dependencies = [
  "anyhow",
  "async-trait",
