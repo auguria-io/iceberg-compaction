@@ -12,90 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Builds and runtime tests run in private rust-pkgs CI; see CI_VALIDATION.md.
 name: CI
-
 on:
   push:
-    branches: [main]
+    branches: [main, greed/datafusion-memory-pool]
   pull_request:
-    branches: [main]
-    paths-ignore:
-      - "*.md"
-      - "LICENSE"
-      - ".gitignore"
-
+    branches: [main, greed/datafusion-memory-pool]
+permissions:
+  contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
-  check:
-    name: Check
+  public-format:
+    name: Public Rust and TOML formatting (not runtime tests)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Rust toolchain
+        with:
+          persist-credentials: false
+      - name: Setup repository Rust toolchain
         uses: ./.github/actions/setup-builder
-
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@v2
-
-      - name: Check formatting
-        run: make check-fmt
-
-      - name: Check TOML formatting
-        run: make check-toml
-
-      - name: Run clippy
-        run: make check-clippy
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Rust toolchain
-        uses: ./.github/actions/setup-builder
-
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@v2
-
-      - name: Build
-        run: make build
-
-  unit-test:
-    name: Unit Test
-    runs-on: ubuntu-latest
-    needs: [check, build]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Rust toolchain
-        uses: ./.github/actions/setup-builder
-
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run unit tests
-        run: make unit-test
-
-  integration-test:
-    name: Integration Test
-    runs-on: ubuntu-latest
-    needs: [check, build]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Rust toolchain
-        uses: ./.github/actions/setup-builder
-
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run integration tests
-        run: make integration-test
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: taplo-cli@0.9.3
+      - run: cargo fmt --all -- --check
+      - run: taplo check
+      - name: Explain separate runtime validation
+        run: |
+          echo 'Public formatting passed. This does not validate builds or runtime behaviour.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Before merge, review the private Fork Dependency Validation run for this exact commit; see CI_VALIDATION.md.' >> "$GITHUB_STEP_SUMMARY"
