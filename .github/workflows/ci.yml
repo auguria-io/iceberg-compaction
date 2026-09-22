@@ -16,9 +16,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, greed/datafusion-memory-pool]
   pull_request:
-    branches: [main]
+    branches: [main, greed/datafusion-memory-pool]
     paths-ignore:
       - "*.md"
       - "LICENSE"

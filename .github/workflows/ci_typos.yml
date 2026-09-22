@@ -16,9 +16,9 @@ name: Typos Check
 
 on:
   push:
-    branches: [main]
+    branches: [main, greed/datafusion-memory-pool]
   pull_request:
-    branches: [main]
+    branches: [main, greed/datafusion-memory-pool]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
