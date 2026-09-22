@@ -66,10 +66,10 @@ result_large_err = "allow"
 
 # Match the Iceberg revision used by production consumers.
 [patch."https://github.com/risingwavelabs/iceberg-rust.git"]
-iceberg = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
-iceberg-catalog-glue = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
-iceberg-catalog-rest = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
-iceberg-datafusion = { git = "https://github.com/auguria-io/iceberg-rust", rev = "14e93467babae21cba104ad1f978319f830b7c75" }
+iceberg = { git = "https://github.com/auguria-io/iceberg-rust", rev = "1e67a8c16def2e409eb45b3adf99db51fedfccbf" }
+iceberg-catalog-glue = { git = "https://github.com/auguria-io/iceberg-rust", rev = "1e67a8c16def2e409eb45b3adf99db51fedfccbf" }
+iceberg-catalog-rest = { git = "https://github.com/auguria-io/iceberg-rust", rev = "1e67a8c16def2e409eb45b3adf99db51fedfccbf" }
+iceberg-datafusion = { git = "https://github.com/auguria-io/iceberg-rust", rev = "1e67a8c16def2e409eb45b3adf99db51fedfccbf" }
 
 # Dependency patches are applied at the workspace root, not inherited from Iceberg.
 [patch.crates-io]
