@@ -20,7 +20,6 @@ datafusion = "53.0"
 futures = "0.3.17"
 iceberg = { git = "https://github.com/risingwavelabs/iceberg-rust.git", rev = "11e09f86c908711770eae2f77220f286adccc58b", features = [
     "storage-s3",
-    "storage-gcs",
     "storage-azblob",
     "storage-azdls",
 ] }
